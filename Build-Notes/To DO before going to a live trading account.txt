@@ -1,0 +1,5 @@
+To DO before going to a live trading account.
+
+Reminder to update API key before it expires.
+Save API key creation date
+Check if say 1 week left to renew API key.

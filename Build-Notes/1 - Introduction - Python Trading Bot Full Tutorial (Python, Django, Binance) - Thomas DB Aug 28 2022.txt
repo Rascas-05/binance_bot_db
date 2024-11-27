@@ -1,0 +1,5 @@
+1 - Introduction - Python Trading Bot Full Tutorial (Python, Django, Binance) - Thomas DB Aug 28 2022
+https://www.youtube.com/watch?v=zrdt1gQHX5o&t=1s
+
+In this tutorial series we will create a python trading bot from scratch. We will use Python for the logic, Django for the database + user interface, and Binance as a trading broker.
+

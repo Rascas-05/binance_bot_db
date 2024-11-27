@@ -1,0 +1,687 @@
+10 - Storing Binance responses in the database - Python Trading Bot Full Tutorial (Python Django) - Thomas DB
+https://www.youtube.com/watch?v=MA0drqYcYxc
+
+Create klines in the database.
+
+---klines\views.py---
+
+def get_klines(request):
+	pair = "BTCUSDT"
+	i = 0
+
+	while 1 < 10
+		response = prettify_binance_response(get_latest_price(client, pair)[0])
+		print(response)
+
+---trading_bot\urls.py
+from klines.views import get_klines
+
+urlpatterns = [
+	path('admin/', admin.site.urls),
+	path('get-klines/', get_klines, name="get_klines'),
+]
+----Terminal---
+Python manage.py runserver
+
+---Browser----
+http://127.0.0.1:8000/get-klines/
+KeyError at /get-klines/
+0
+Request Method:	GET
+Request URL:	http://127.0.0.1:8000/get-klines/
+Django Version:	5.1.3
+Exception Type:	KeyError
+Exception Value:	
+0
+Exception Location:	C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\klines\views.py, line 193, in get_klines
+Raised during:	klines.views.get_klines
+Python Executable:	C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Scripts\python.exe
+Python Version:	3.12.4
+Python Path:	
+['C:\\Users\\bfvdi\\Documents\\AppDevelopment\\VSCODE\\Projects\\Django\\Thomas-DB\\binance_bot_db',
+ 'C:\\Users\\bfvdi\\AppData\\Local\\Programs\\Python\\Python312\\python312.zip',
+ 'C:\\Users\\bfvdi\\AppData\\Local\\Programs\\Python\\Python312\\DLLs',
+ 'C:\\Users\\bfvdi\\AppData\\Local\\Programs\\Python\\Python312\\Lib',
+ 'C:\\Users\\bfvdi\\AppData\\Local\\Programs\\Python\\Python312',
+ 'C:\\Users\\bfvdi\\Documents\\AppDevelopment\\VSCODE\\Projects\\Django\\Thomas-DB\\binance_bot_db\\.venv',
+ 'C:\\Users\\bfvdi\\Documents\\AppDevelopment\\VSCODE\\Projects\\Django\\Thomas-DB\\binance_bot_db\\.venv\\Lib\\site-packages']
+Server time:	Tue, 26 Nov 2024 05:21:34 +0000
+----klines\views.py----
+Removed '[0]'
+def get_klines(request):
+    code = "BTCUSDT"
+    i = 0
+
+    while i < 10:
+        #response = prettify_binance_response(get_latest_price(client, code)[0])
+        response = prettify_binance_response(get_latest_price(client, code))
+
+        print(response)
+-----terminal-----
+Restarted Django server
+---Browser---
+tried url -> http://127.0.0.1:8000/get-klines/
+---------------
+Traceback Switch to copy-and-paste view
+C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\core\handlers\exception.py, line 55, in inner
+                response = get_response(request)
+                               ^^^^^^^^^^^^^^^^^^^^^ …
+Local vars
+C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\core\handlers\base.py, line 197, in _get_response
+                response = wrapped_callback(request, *callback_args, **callback_kwargs)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ …
+Local vars
+C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\klines\views.py, line 194, in get_klines
+        response = prettify_binance_response(get_latest_price(client, code))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ …
+Local vars
+C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\klines\views.py, line 169, in prettify_binance_response
+        "open_time": datetime.fromtimestamp(int(str(kline[0])[:10]), tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                                                         ^^^^^^^^ …
+Local vars
+-----------------------
+Test how code runs in klines\views.py as it was previously running okay in binance_bot_db folder.
+Test code needs some more to do  
+---views.py---
+from django.shortcuts import render
+
+# Create your views here.
+from binance.client import Client
+import logging
+from binance.exceptions import BinanceAPIException
+#*****Start My code*****
+# importing os module for environment variables
+import os, time
+# importing necessary functions from dotenv library
+from dotenv import load_dotenv, dotenv_values 
+from datetime import date, datetime, timezone
+import json, pprint
+from dateutil.parser import parse
+# loading variables from .env file
+load_dotenv() 
+
+# accessing API keys
+# Note .env file should be in the root directory as well as trading_bot.py
+    
+BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
+BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
+#test key
+#****************************************************
+# TO DO CHECK LIST
+#****************************************************
+# to do: comment out print Keys
+#print(BINANCE_API_KEY)
+#print(BINANCE_API_SECRET)
+# Test Biance error logging - -> log.json
+# SECURITY WARNING: don't run with debug turned on in production!
+#****************************************************
+client = Client(BINANCE_API_KEY,BINANCE_API_SECRET)
+
+#If your API Key does not have whitelisted IP address(es), i.e. this API Key allows access to any IP address,
+#your selected "Enable Spot & Margin Trading" permission will be valid for 90 days from the activation time. 
+#The system will automatically uncheck the permission after the expiration date.26 July 2021
+BINANCE_API_KEY_WHITE_LISTED = os.getenv("BINANCE_API_KEY_WHITE_LISTED")
+  
+# Check how many days before API Key expires
+#start_date = os.getenv("BINANCE_API_KEY_DATE")
+end_date = os.getenv("BINANCE_API_KEY_EXPIRES")
+end_date = "2025-2-20"
+#print(f'end Date Type = {type(end_date)}')
+# end_date is a string so we need to reformat it as a datetime object otherwise we get a dateutil.parser error
+
+print(f'End Date = {end_date}')
+print(f'End Date Type = {type(end_date)}')
+#Convert a date string to a DateTime Object
+def convert_to_datetime(input_str, parserinfo=None):
+    return parse(input_str, parserinfo=parserinfo)
+ 
+# Example usage -> date_string = '2023-07-25'
+date2 = convert_to_datetime(end_date)
+print(date2)
+print(f'Type date2 = {type(date2)}')
+
+def numOfDays(date1, date2):
+    return (date2-date1).days
+     
+date1 = datetime.today()
+print(f' Today is {date1}')
+print(f'Date1 type = {type(date1)}')
+print(f'Date2 type = {type(date2)}')
+diff = numOfDays(date1, date2)
+print(f'Your API key expires in {diff} days')
+
+# Set up the logger to log errors in JSON format
+class JsonLogFormatter(logging.Formatter):
+    def format(self, record):
+        log_message = {
+            'time': self.formatTime(record, self.datefmt),
+            'level': record.levelname,
+            'message': record.getMessage(),
+            'exception': record.exc_info,
+        }
+        return json.dumps(log_message)
+
+logger = logging.getLogger('binance_logger')
+logger.setLevel(logging.ERROR)
+
+# Create file handler that logs error messages
+file_handler = logging.FileHandler('log.json')
+file_handler.setLevel(logging.ERROR)
+
+# Set custom formatter
+formatter = JsonLogFormatter()
+file_handler.setFormatter(formatter)
+
+# Add file handler to logger
+logger.addHandler(file_handler)
+
+# Create file log.json?
+if not os.path.exists("log.json"): 
+    log = {}
+    log['errors'] = "None"
+    # write data to log.json file
+    with open("log.json", "w") as f:
+        json.dump(log, f)
+        
+#Check we can open log.json file  
+try:
+  with open("log.json") as f:
+    log = json.load(f)
+    print("Loading data from log.json file") 
+except:
+    print("Something went wrong when opening file log.json")
+finally:
+    f.close()
+    
+# Create file data.json?
+if not os.path.exists("data.json"): 
+    data = {}
+    
+    data['API_KEY_DATE'] = os.getenv("BINANCE_API_KEY_DATE")
+    data['API_KEY_EXPIRES'] = os.getenv("BINANCE_API_KEY_EXPIRES")
+    data['TESTNET'] = os.getenv("TESTNET")
+    data['API_KEY_WHITE_LISTED'] = os.getenv("BINANCE_API_KEY_WHITE_LISTED")
+    print("data.json file created")
+    # write data to data.json file
+    with open("data.json", "w") as f:
+        json.dump(data, f)
+
+#Check we can open data.json file  
+try:
+  with open("data.json") as f:
+    data = json.load(f)
+    print("Reading data from data.json file")
+    print(f"API Created date: {data.get('API_KEY_DATE')}")
+    print(f"API Key Expiry date: {data.get('API_KEY_EXPIRES')}")
+    print(f"Testnet .env = {data.get('TESTNET')}")
+    net = data.get('TESTNET')     
+    if net == "True":
+        print("Using Binance Testnet")
+    else:
+        print("Using Binance Mainnet")
+    print(f"API Key White Listed? {data.get('API_KEY_WHITE_LISTED')}")
+    f.close()  
+except:
+    print("Something went wrong when opening file data.json")
+finally:
+    f.close()
+    
+#*****End My code******
+#--------------------------------------------------------
+# 5 - Requesting the latest prices from Binance API - Python Trading Bot Full Tutorial - Thomas DB
+# https://www.youtube.com/watch?v=xv6_-XRD7hM
+#
+client = Client(BINANCE_API_KEY,BINANCE_API_SECRET)
+
+# Function to fetch the latest price (Kline data) from Binance
+def get_latest_price(client, code):
+    try:
+        # Get the historical kline (candlestick) data
+        latest_price = client.get_historical_klines(code, Client.KLINE_INTERVAL_1MINUTE, "1 minute ago UTC")
+        # Return the prettified response
+        return prettify_binance_response(latest_price[0])  # Get the first kline in the response
+    except BinanceAPIException as e:
+        logger.error(f"Binance API Error: {str(e)}", exc_info=True)
+        print(f"Error: {str(e)}")
+    except Exception as e:
+        logger.error(f"General Error: {str(e)}", exc_info=True)
+        print(f"Error: {str(e)}")
+    return None
+
+# Function to prettify the kline data (convert to a more readable format)
+def prettify_binance_response(kline):
+    return {
+        "open_time": datetime.fromtimestamp(int(str(kline[0])[:10]), tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "open": kline[1],
+        "high": kline[2],
+        "low": kline[3],
+        "close": kline[4],
+        "volume": kline[5],
+        "close_time": datetime.fromtimestamp(int(str(kline[6])[:10]), tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "quote_asset_volume": kline[7],
+        "number_of_trades": kline[8],
+        "taker_buy_base_asset_volume": kline[9],
+        "taker_buy_quote_asset_volume": kline[10]
+    }
+
+#======================
+# This Test code works in views.py
+code = "BTCUSDT"
+i = 0
+while i < 2:
+    #response = prettify_binance_response(get_latest_price(client, code)[0])
+    response = get_latest_price(client, code)
+    if response:
+        print(response)
+    else:
+        # To do log Binance errors
+        print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+
+    time.sleep(10)
+    i += 1
+
+#=====================================================================
+def get_klines(request):
+    code = "BTCUSDT"
+    i = 0
+    while i < 2:
+        response = get_latest_price(client, code)
+        if response:
+            print(response)
+        else:
+            # To do log Binance errors
+            print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+        time.sleep(10)
+        i += 1
+-------------
+---Extract - trading_bot\urls.py---
+
+from django.contrib import admin
+from django.urls import path
+from klines.views import get_klines
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('get-klines/', get_klines, name="get_klines"),
+]
+-------------------------
+Run Django server and test get_klines()
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> python manage.py runserver
+Watching for file changes with StatReloader
+Performing system checks...
+
+End Date = 2025-2-20
+End Date Type = <class 'str'>
+2025-02-20 00:00:00
+Type date2 = <class 'datetime.datetime'>
+ Today is 2024-11-27 12:39:34.700424
+Date1 type = <class 'datetime.datetime'>
+Date2 type = <class 'datetime.datetime'>
+Your API key expires in 84 days
+Loading data from log.json file
+Reading data from data.json file
+API Created date: "2024-11-22" #Date format: yyyy-mm-dd
+API Key Expiry date: "2025-2-20" #Date format: yyyy-mm-dd
+Testnet .env = True
+Using Binance Testnet
+API Key White Listed? False
+System check identified no issues (0 silenced).
+November 27, 2024 - 12:39:35
+Django version 5.1.3, using settings 'trading_bot.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+[27/Nov/2024 12:39:48] "GET /admin/ HTTP/1.1" 200 7058
+[27/Nov/2024 12:39:48] "GET /static/admin/css/base.css HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+[27/Nov/2024 12:39:48] "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+Not Found: /favicon.ico
+[27/Nov/2024 12:39:48] "GET /favicon.ico HTTP/1.1" 404 2386
+[27/Nov/2024 12:40:06] "GET /admin/ HTTP/1.1" 200 7058
+{'open_time': '2024-11-27 01:40:00', 'open': '92590.00000000', 'high': '92599.15000000', 'low': '92564.00000000', 'close': '92564.00000000', 'volume': '11.49350000', 'close_time': '2024-11-27 01:40:59', 'quote_asset_volume': '1064226.54124410', 'number_of_trades': 1058, 'taker_buy_base_asset_volume': '1.29455000', 'taker_buy_quote_asset_volume': '119864.80937110'}
+{'open_time': '2024-11-27 01:40:00', 'open': '92590.00000000', 'high': '92599.15000000', 'low': '92509.14000000', 'close': '92519.99000000', 'volume': '29.33299000', 'close_time': '2024-11-27 01:40:59', 'quote_asset_volume': '2714931.12354720', 'number_of_trades': 2258, 'taker_buy_base_asset_volume': '4.57900000', 'taker_buy_quote_asset_volume': '423747.78564900'}
+Internal Server Error: /get-klines/
+Traceback (most recent call last):
+  File "C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\core\handlers\base.py", line 204, in _get_response
+    self.check_response(response, callback)
+  File "C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\core\handlers\base.py", line 332, in check_response
+    raise ValueError(
+ValueError: The view klines.views.get_klines didn't return an HttpResponse object. It returned None instead.
+[27/Nov/2024 12:40:47] "GET /get-klines/ HTTP/1.1" 500 71212
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db>
+----------------------------------------------------------------------------------------------
+ValueError: The view klines.views.get_klines didn't return an HttpResponse object. It returned None instead.
+[27/Nov/2024 12:40:47] "GET /get-klines/ HTTP/1.1" 500 71212
+-----------
+If I change 2 to say 5 for the while loop, 5 klines are retrieved and then the ValueError occurs.
+def get_klines(request):
+    code = "BTCUSDT"
+    i = 0
+    while i < 2:
+=============
+---settings\urls.py---
+from django.contrib import admin
+from django.urls import path
+from klines.views import get_klines
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, Django Beginner World!")
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', lambda request: HttpResponse("Hello, my new Django World!")),
+    path('get-klines/', get_klines, name="get_klines"),
+]
+----klines\views.py----
+from django.shortcuts import render, redirect
+
+#=====================================================================
+def get_klines(request):
+    code = "BTCUSDT"
+    try:
+        i = 0
+        while i < 5:
+            response = get_latest_price(client, code)
+            if response:
+                print(response)
+            else:
+                # To do log Binance errors
+                print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            time.sleep(10)
+            i += 1
+    except Exception as e:
+        return redirect('home/')
+#=====================================================================
+---Updated trading_boy - settings.py---
+from django.contrib import admin
+from django.urls import path
+from klines.views import get_klines
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, Django Beginner World!")
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', lambda request: HttpResponse("Hello, my new Django World!")),
+    path('get-klines/', get_klines, name="get_klines"),
+]
+---updatedklines\views.py---
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+# Create your views here.
+from binance.client import Client
+import logging
+from binance.exceptions import BinanceAPIException
+#*****Start My code*****
+# importing os module for environment variables
+import os, time
+# importing necessary functions from dotenv library
+from dotenv import load_dotenv, dotenv_values 
+from datetime import date, datetime, timezone
+import json, pprint
+from dateutil.parser import parse
+# loading variables from .env file
+load_dotenv() 
+
+# accessing API keys
+# Note .env file should be in the root directory as well as trading_bot.py
+    
+BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
+BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
+#test key
+#****************************************************
+# TO DO CHECK LIST
+#****************************************************
+# to do: comment out print Keys
+#print(BINANCE_API_KEY)
+#print(BINANCE_API_SECRET)
+# Test Biance error logging - -> log.json
+# SECURITY WARNING: don't run with debug turned on in production!
+#****************************************************
+client = Client(BINANCE_API_KEY,BINANCE_API_SECRET)
+
+#If your API Key does not have whitelisted IP address(es), i.e. this API Key allows access to any IP address,
+#your selected "Enable Spot & Margin Trading" permission will be valid for 90 days from the activation time. 
+#The system will automatically uncheck the permission after the expiration date.26 July 2021
+BINANCE_API_KEY_WHITE_LISTED = os.getenv("BINANCE_API_KEY_WHITE_LISTED")
+  
+# Check how many days before API Key expires
+#start_date = os.getenv("BINANCE_API_KEY_DATE")
+end_date = os.getenv("BINANCE_API_KEY_EXPIRES")
+end_date = "2025-2-20"
+#print(f'end Date Type = {type(end_date)}')
+# end_date is a string so we need to reformat it as a datetime object otherwise we get a dateutil.parser error
+
+print(f'End Date = {end_date}')
+print(f'End Date Type = {type(end_date)}')
+#Convert a date string to a DateTime Object
+def convert_to_datetime(input_str, parserinfo=None):
+    return parse(input_str, parserinfo=parserinfo)
+ 
+# Example usage -> date_string = '2023-07-25'
+date2 = convert_to_datetime(end_date)
+print(date2)
+print(f'Type date2 = {type(date2)}')
+
+def numOfDays(date1, date2):
+    return (date2-date1).days
+     
+date1 = datetime.today()
+print(f' Today is {date1}')
+print(f'Date1 type = {type(date1)}')
+print(f'Date2 type = {type(date2)}')
+diff = numOfDays(date1, date2)
+print(f'Your API key expires in {diff} days')
+
+# Set up the logger to log errors in JSON format
+class JsonLogFormatter(logging.Formatter):
+    def format(self, record):
+        log_message = {
+            'time': self.formatTime(record, self.datefmt),
+            'level': record.levelname,
+            'message': record.getMessage(),
+            'exception': record.exc_info,
+        }
+        return json.dumps(log_message)
+
+logger = logging.getLogger('binance_logger')
+logger.setLevel(logging.ERROR)
+
+# Create file handler that logs error messages
+file_handler = logging.FileHandler('log.json')
+file_handler.setLevel(logging.ERROR)
+
+# Set custom formatter
+formatter = JsonLogFormatter()
+file_handler.setFormatter(formatter)
+
+# Add file handler to logger
+logger.addHandler(file_handler)
+
+# Create file log.json?
+if not os.path.exists("log.json"): 
+    log = {}
+    log['errors'] = "None"
+    # write data to log.json file
+    with open("log.json", "w") as f:
+        json.dump(log, f)
+        
+#Check we can open log.json file  
+try:
+  with open("log.json") as f:
+    log = json.load(f)
+    print("Loading data from log.json file") 
+except:
+    print("Something went wrong when opening file log.json")
+finally:
+    f.close()
+    
+# Create file data.json?
+if not os.path.exists("data.json"): 
+    data = {}
+    
+    data['API_KEY_DATE'] = os.getenv("BINANCE_API_KEY_DATE")
+    data['API_KEY_EXPIRES'] = os.getenv("BINANCE_API_KEY_EXPIRES")
+    data['TESTNET'] = os.getenv("TESTNET")
+    data['API_KEY_WHITE_LISTED'] = os.getenv("BINANCE_API_KEY_WHITE_LISTED")
+    print("data.json file created")
+    # write data to data.json file
+    with open("data.json", "w") as f:
+        json.dump(data, f)
+
+#Check we can open data.json file  
+try:
+  with open("data.json") as f:
+    data = json.load(f)
+    print("Reading data from data.json file")
+    print(f"API Created date: {data.get('API_KEY_DATE')}")
+    print(f"API Key Expiry date: {data.get('API_KEY_EXPIRES')}")
+    print(f"Testnet .env = {data.get('TESTNET')}")
+    net = data.get('TESTNET')     
+    if net == "True":
+        print("Using Binance Testnet")
+    else:
+        print("Using Binance Mainnet")
+    print(f"API Key White Listed? {data.get('API_KEY_WHITE_LISTED')}")
+    f.close()  
+except:
+    print("Something went wrong when opening file data.json")
+finally:
+    f.close()
+    
+#*****End My code******
+#--------------------------------------------------------
+# 5 - Requesting the latest prices from Binance API - Python Trading Bot Full Tutorial - Thomas DB
+# https://www.youtube.com/watch?v=xv6_-XRD7hM
+#
+client = Client(BINANCE_API_KEY,BINANCE_API_SECRET)
+
+# Function to fetch the latest price (Kline data) from Binance
+def get_latest_price(client, code):
+    try:
+        # Get the historical kline (candlestick) data
+        latest_price = client.get_historical_klines(code, Client.KLINE_INTERVAL_1MINUTE, "1 minute ago UTC")
+        # Return the prettified response
+        return prettify_binance_response(latest_price[0])  # Get the first kline in the response
+    except BinanceAPIException as e:
+        logger.error(f"Binance API Error: {str(e)}", exc_info=True)
+        print(f"Error: {str(e)}")
+    except Exception as e:
+        logger.error(f"General Error: {str(e)}", exc_info=True)
+        print(f"Error: {str(e)}")
+    return None
+
+# Function to prettify the kline data (convert to a more readable format)
+def prettify_binance_response(kline):
+    return {
+        "open_time": datetime.fromtimestamp(int(str(kline[0])[:10]), tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "open": kline[1],
+        "high": kline[2],
+        "low": kline[3],
+        "close": kline[4],
+        "volume": kline[5],
+        "close_time": datetime.fromtimestamp(int(str(kline[6])[:10]), tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        "quote_asset_volume": kline[7],
+        "number_of_trades": kline[8],
+        "taker_buy_base_asset_volume": kline[9],
+        "taker_buy_quote_asset_volume": kline[10]
+    }
+
+#======================
+# # This Test code works in view.py
+# code = "BTCUSDT"
+# i = 0
+# while i < 2:
+#     #response = prettify_binance_response(get_latest_price(client, code)[0])
+#     response = get_latest_price(client, code)
+#     if response:
+#         print(response)
+#     else:
+#         # To do log Binance errors
+#         print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+
+#     time.sleep(10)
+#     i += 1
+#=====================================================================
+def get_klines(request):
+    code = "BTCUSDT"
+    try:
+        i = 0
+        while i < 5:
+            response = get_latest_price(client, code)
+            if response:
+                print(response)
+            else:
+                # To do log Binance errors
+                print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            time.sleep(10)
+            i += 1
+        return HttpResponse("Successfully fetched the latest prices.")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        # Redirect to the home page on error
+        return redirect('home')  # Ensure 'home' view is correctly defined in your URLs
+        return redirect('home/')
+#=====================================================================
+Now when the klines have all been fetched:
+http://127.0.0.1:8000/get-klines/ now show the following message:
+"Successfully fetched the latest prices."
+=======================================================================
+Saving the kline responses in the database.
+#=====================================================================
+from .models import Klines
+
+def get_klines(request):
+    code = "BTCUSDT"
+    try:
+        i = 0
+        while i < 5:
+            response = get_latest_price(client, code)
+            if response:
+                print(response)
+		Klines.objects.create(
+				code = code,
+			        open_time = response("open_time"),
+        			open = response("open"),
+        			high = response("high"),
+        			low = response("low"),
+        			close = response("close"),
+        			volume = response("volume"),
+        			close_time = response("close_time"),
+        			quote_asset_volume = ("quote_asset_volume"),
+        			number_of_trades = ("number_of_trades"),
+        			taker_buy_base_asset_volume = ("taker_buy_base_asset_volume"),
+        			taker_buy_quote_asset_volume = ("taker_buy_quote_asset_volume"),
+		)
+            else:
+                # To do log Binance errors
+                print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            time.sleep(10)
+            i += 1
+        return HttpResponse("Successfully fetched the latest prices.")
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        # Redirect to the home page on error
+        return redirect('home')  # Ensure 'home' view is correctly defined in your URLs
+        return redirect('home/')
+#=====================================================================
+Refer to additional 10 - Notes
+---------
+Note. I created a lot of my own problems when I shortened the name of the Kline class objects and as a result they didn't match up with the Binance kline API elements. when I added the following HttpResponse statement I was able to identify this issue. 
+except Exception as e:
+        print(f"Error occurred: {e}")
+        return HttpResponse(f' the following error occured when retrieving klines to get the latest prices. {e}')
+---------
+
+  

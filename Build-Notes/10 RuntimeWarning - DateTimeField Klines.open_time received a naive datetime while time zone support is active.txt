@@ -1,0 +1,90 @@
+10 RuntimeWarning - DateTimeField Klines.open_time received a naive datetime while time zone support is active.
+C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Lib\site-packages\django\db\models\fields\__init__.py:1665: RuntimeWarning: DateTimeField Klines.open_time received a naive datetime (2024-11-27 10:42:00) while time zone support is active.
+  warnings.warn(
+
+The warning you're seeing is caused by Django's timezone-aware settings. Specifically, Django requires datetime objects to be "timezone-aware" when timezone support is enabled. 
+
+### Explanation:
+Django's `USE_TZ` setting is enabled by default, meaning that all datetime objects should be timezone-aware. The warning indicates that a naive datetime (i.e., a datetime object without any timezone information) is being passed to a `DateTimeField` in your `Klines` model. This happens when you're trying to save a datetime object (`2024-11-27 10:42:00`) that doesn't include timezone information while the `USE_TZ` setting is set to `True`.
+
+### How to Fix:
+
+To fix this issue, you need to convert your naive datetime to a timezone-aware datetime before passing it to Django's `DateTimeField`.
+
+Here are a few ways to handle this:
+
+#### 1. **Make the datetime timezone-aware manually:**
+
+You can make the datetime object timezone-aware by using Django's `timezone` module. For instance:
+
+```python
+from django.utils import timezone
+
+# Convert the naive datetime to timezone-aware datetime
+naive_datetime = datetime(2024, 11, 27, 10, 42, 0)
+aware_datetime = timezone.make_aware(naive_datetime)
+
+# Now you can use the aware datetime
+Klines.objects.create(open_time=aware_datetime, ...)
+```
+
+In this example, `timezone.make_aware` converts the naive datetime to a timezone-aware datetime in the default timezone (which is typically UTC unless you configure it otherwise).
+
+#### 2. **Use `timezone.now()` instead of `datetime.now()`:**
+
+If you're getting the current datetime and want it to be timezone-aware, you can use `timezone.now()` instead of `datetime.now()`:
+
+```python
+from django.utils import timezone
+
+open_time = timezone.now()  # Returns a timezone-aware datetime object
+
+Klines.objects.create(open_time=open_time, ...)
+```
+
+`timezone.now()` automatically provides the current date and time as a timezone-aware object, which resolves the warning.
+
+#### 3. **Ensure you are using the correct timezone when converting:**
+
+If you want to specify a particular timezone, you can use `timezone.make_aware` and provide the specific timezone as the second argument:
+
+```python
+from django.utils import timezone
+import pytz
+
+naive_datetime = datetime(2024, 11, 27, 10, 42, 0)
+timezone_aware_datetime = timezone.make_aware(naive_datetime, pytz.timezone('America/New_York'))
+
+# Now the datetime is timezone-aware
+Klines.objects.create(open_time=timezone_aware_datetime, ...)
+```
+
+This will make sure the datetime is correctly converted to the `America/New_York` timezone, if that’s your desired timezone.
+
+#### 4. **Ensure your model field is timezone-aware:**
+
+If the field (`open_time` in your case) is set up correctly to handle timezone-aware datetimes, there’s no need to worry about the timezone part as long as you're making the datetime aware before storing it. Here's an example of how to define the field:
+
+```python
+from django.db import models
+
+class Klines(models.Model):
+    open_time = models.DateTimeField()  # This will handle timezone-aware datetime
+```
+
+If `USE_TZ` is set to `True` in your settings, Django will ensure that the datetime values stored in this field are timezone-aware.
+
+### 5. **Django settings (if needed):**
+
+Ensure your Django settings are configured for time zone support. In your `settings.py`, you should have:
+
+```python
+USE_TZ = True  # This enables time zone support
+TIME_ZONE = 'UTC'  # Or another timezone if you prefer, e.g., 'America/New_York'
+```
+
+### Summary:
+
+To resolve the warning, the key step is to ensure that you are working with **timezone-aware datetimes**. Use `timezone.make_aware()` or `timezone.now()` to make sure the datetime values are aware when you save them to the model.
+
+Let me know if you need further clarification on any part of this process!

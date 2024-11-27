@@ -1,0 +1,166 @@
+7 - Installing Django - Python Trading Bot Full Tutorial (Python - Django - Binance) Thomas DB
+https://www.youtube.com/watch?v=3C5hPbz9JHI
+
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> pip list
+Package            Version
+------------------ -----------
+aiohappyeyeballs   2.4.3      
+aiohttp            3.11.6     
+aiosignal          1.3.1      
+attrs              24.2.0     
+certifi            2024.8.30  
+charset-normalizer 3.4.0      
+dateparser         1.2.0      
+frozenlist         1.5.0      
+idna               3.10       
+multidict          6.1.0      
+pip                24.3.1     
+propcache          0.2.0      
+pycryptodome       3.21.0     
+python-binance     1.0.22     
+python-dateutil    2.9.0.post0
+python-dotenv      1.0.1
+pytz               2024.2
+regex              2024.11.6
+requests           2.32.3
+six                1.16.0
+tzdata             2024.2
+tzlocal            5.2
+ujson              5.10.0
+urllib3            2.2.3
+websockets         14.1
+yarl               1.17.2
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> 
+
+pip install django
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> pip list
+Package            Version
+------------------ -----------
+aiohappyeyeballs   2.4.3
+aiohttp            3.11.6
+aiosignal          1.3.1
+asgiref            3.8.1
+attrs              24.2.0
+certifi            2024.8.30
+charset-normalizer 3.4.0
+dateparser         1.2.0
+Django             5.1.3
+frozenlist         1.5.0
+idna               3.10
+multidict          6.1.0
+pip                24.3.1
+propcache          0.2.0
+pycryptodome       3.21.0
+python-binance     1.0.22
+python-dateutil    2.9.0.post0
+python-dotenv      1.0.1
+pytz               2024.2
+regex              2024.11.6
+requests           2.32.3
+six                1.16.0
+sqlparse           0.5.2
+tzdata             2024.2
+tzlocal            5.2
+ujson              5.10.0
+urllib3            2.2.3
+websockets         14.1
+yarl               1.17.2
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> 
+
+---terminal---
+# Take note of trailing '.'
+PS djang0-admin startproject trading_bot .
+# Note trading_bot folder is created.
+
+Note the first time you run this command it will create an SQLite3 database and create the first tables.
+PS python manage.py migrate
+-----------------
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying sessions.0001_initial... OK
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> 
+--------------------------------
+# trading_bot-> db.sqlite3 has been created.
+Inspect db.sqlite using "DB Browser for SQLIte"
+Close database.
+-----------------------
+Create "Trades app" in Django to store our trades.
+
+Run the Django server
+---Terminal---
+PS python manage.py runserver
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> python manage.py runserver
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 24, 2024 - 20:35:19
+Django version 5.1.3, using settings 'trading_bot.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+-------
+Open Web browser http://127.0.0.1:8000/
+The install worked successfully! Congratulations!
+View release notes for Django 5.1
+----trading_not\settings.py----
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-qkbd2$_)g=7*(dal=l+$5)nxy+2cl&^t%0)06=pf+umf7motiz'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+copy SECRET_KEY to .env file
+----settings.py---
+from pathlib import Path
+import os
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")
+---------------
+close VSCode and reopen project
+Now you should be able to open the admin page
+http://127.0.0.1:8000/admin/login/?next=/admin/
+Resume video https://youtu.be/3C5hPbz9JHI?si=KmQN9ueh0RCrFxUT&t=455
+-----------------
+Create Django Super User/Admin
+----Terminal----
+PS python manage.py createsuperuser 
+username=
+email=
+pasword=
+
+ps> python manage.py runserver
+----Web Browser---
+http://127.0.0.1:8000/admin
+Login with Admin credentials (username & password)
+Login successful.
+-----------
+---Terminal---
+Stop server
+ps> Ctrl+c
+
+Note Thomas recommends to create new apps with plural names.
+#Create "trades" app
+ps> python manage.py startapp trades 
+
+#Note a new folder "trades" had been created with sub folders.
+
+-----End of video #7-----
+ 

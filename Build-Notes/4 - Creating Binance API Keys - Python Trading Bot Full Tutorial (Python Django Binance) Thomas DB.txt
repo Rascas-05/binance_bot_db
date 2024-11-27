@@ -1,0 +1,18 @@
+4 - Creating Binance API Keys - Python Trading Bot Full Tutorial (Python Django Binance) Thomas DB
+https://www.youtube.com/watch?v=R6PG9-Ujehs
+
+In this video we make the connection between a Python script and Binance API.
+
+Set up a Binance account for bot and create an API key
+Enable Spot and Margin tradning options in API key
+Copy and save API keys.
+
+Note date API key created.
+
+Create file trading_bot.py file
+BINANCE_API_KEy = "<Public API Key>"
+BINANCE_API_SECRET = "<Secret API Key>"
+
+
+
+

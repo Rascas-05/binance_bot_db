@@ -1,0 +1,53 @@
+The issue you're facing is because the view is incorrectly redirecting to `http://127.0.0.1:8000/get-klines/home/` instead of simply `http://127.0.0.1:8000/home/`. This is happening because the `redirect('home/')` line in your `get_klines` view is incorrect. In Django, when using `redirect()`, you should pass the name of the view or a URL path without a trailing slash unless it's part of the defined URL pattern.
+
+### Why the issue occurs:
+- The `redirect('home/')` is treated as an absolute path (with a trailing slash). Django doesn't recognize it as the correct route, and it tries to resolve it as `/get-klines/home/`, which does not exist in your URL patterns.
+  
+### Solution:
+You need to use `redirect('home')` instead of `redirect('home/')`. This will properly redirect the user to the `home` URL defined in `urlpatterns`.
+
+### Fixed `get_klines` view:
+
+```python
+from django.shortcuts import redirect
+from django.http import HttpResponse
+import time
+from datetime import datetime
+
+def get_klines(request):
+    code = "BTCUSDT"
+    try:
+        i = 0
+        while i < 5:
+            response = get_latest_price(client, code)  # Ensure you have defined 'client' and 'get_latest_price'
+            if response:
+                print(response)
+            else:
+                # Log Binance errors
+                print(f'Binance request for Crypto pair: {code} failed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            time.sleep(10)
+            i += 1
+
+        # After loop finishes, return a response
+        return HttpResponse("Successfully fetched the latest prices.")
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        # Redirect to the home page on error
+        return redirect('home')  # Corrected to use the view name, not a URL with a trailing slash
+```
+
+### Key Points:
+- **Use `redirect('home')`**: In `redirect()`, the argument should be the **view name** or the **URL pattern name** without a trailing slash. `home` refers to the name of the URL pattern you defined for your home view.
+  
+- **Trailing Slash in URLs**: Django's `redirect()` works with URL patterns by their names. When you define a path with the name `'home'`, Django will resolve it to the correct URL based on your `urlpatterns`. You should not include a trailing slash unless it's explicitly required by the path definition.
+
+### Explanation of the Error:
+
+The error occurred because Django tried to resolve `/get-klines/home/` instead of `/home/` as the redirect target. Since you used `redirect('home/')`, Django interpreted it as a URL path, which it couldn't find.
+
+### Summary:
+1. Use `redirect('home')` instead of `redirect('home/')` to correctly resolve the URL pattern by its name.
+2. The rest of your view logic is fine, so this change should fix the redirection problem.
+
+After this change, the redirection should work correctly, and you should be redirected to `http://127.0.0.1:8000/home/` when there’s an error in the `get_klines` view.

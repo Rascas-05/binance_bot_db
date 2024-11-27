@@ -1,0 +1,27 @@
+2 Installing Python - Python Trading Bot Full Tutorial (Python - Django - Binance)
+https://www.youtube.com/watch?v=Jtf71nIhXRA
+Download and install Python.
+I installed Python extension using VSCode. 
+PS C:\Users\bfvdi\Document\VSCODE\Projects\BinanceBot-DB>python --version
+Python 3.11.4
+---VSCode---
+Create new GitHub repository
+https://github.com/Rascas-05/binance_bot_db.git
+Open VSCode -> select "Clone Git Repository"
+Select "Clone from GitHub"
+Select binance_bot_db.git
+Select Destination folder
+Select "Open" 'Would you like to open the cloned repository'
+VSCode shortcut -> "Ctrl+Shift+p"
+Select Create Python Environment -> .Venv - Pythn 64-Bit
+Select "File->Save Workspace as ->Accept file name ->Save
+---VSCode Terminal---
+Activate Python virtual environment (.venv)
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db>
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db> cd .venv\Scripts
+PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Scripts> .\activate
+(.venv) PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv\Scripts> cd..
+(.venv) PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db\.venv> cd..
+(.venv) PS C:\Users\bfvdi\Documents\AppDevelopment\VSCODE\Projects\Django\Thomas-DB\binance_bot_db>  
+
+
